@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'main' %}
+<div class="container d-flex justify-content-center align-items-center mt-5" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4 bg-light rounded" style="width: 50%;">
+        <h1 class="text-center mb-4 text-info">Add New Department</h1>
+        <form method="post" class="p-3">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-info btn-lg mx-2">Add Department</button>
+                <a href="/department" class="btn btn-info btn-lg mx-2">Back to Dashboard</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock 'main' %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'main' %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Upcoming Events</h1>
+
+    <!-- Add Event Section -->
+    <div class="card shadow p-4 mb-5 bg-light">
+        <h3 class="text-center">Add New Event</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="event-name">Event Name</label>
+                        <input type="text" id="event-name" name="event_name" class="form-control" placeholder="Enter event name" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="event-date">Event Date</label>
+                        <input type="date" id="event-date" name="event_date" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="event-description">Event Description</label>
+                <textarea id="event-description" name="event_description" rows="3" class="form-control" placeholder="Enter event description" required></textarea>
+            </div>
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success btn-lg">Add Event</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- List of Upcoming Events -->
+    <h3 class="mb-3">Event List</h3>
+    <table class="table table-striped shadow">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Sample Data for Upcoming Events -->
+            <tr>
+                <td>1</td>
+                <td>Team Building Workshop</td>
+                <td>2025-02-05</td>
+                <td>A fun day to enhance teamwork and collaboration.</td>
+                <td>
+                    <a href="#" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Quarterly Review Meeting</td>
+                <td>2025-02-10</td>
+                <td>Reviewing the performance and goals for the quarter.</td>
+                <td>
+                    <a href="#" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Annual Celebration</td>
+                <td>2025-03-15</td>
+                <td>Celebrating the organization's achievements for the year.</td>
+                <td>
+                    <a href="#" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock 'main' %}
