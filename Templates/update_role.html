@@ -1,8 +1,9 @@
+
 {% extends 'base.html' %}
 {% load static %}
 {% block 'main' %}
 
-<title>Update Department</title>
+<title>Update Role</title>
 </head>
 <body>
     <div class="container mt-5">
@@ -14,13 +15,13 @@
             <form method="post" class="form">
                 {% csrf_token %}
                 <div class="form-group mb-4">
-                    <h1 class="text-center text-primary mb-4">Update Department</h1>
+                    <h1 class="text-center text-primary mb-4">Update Role</h1>
                     {{ form.as_p }}
                 </div>
                 <!-- Action buttons -->
                 <div class="text-center">
-                    <button type="submit" class="btn btn-info btn-lg px-5 py-2 me-3">Update Department</button>
-                    <a href="/department" class="btn btn-info btn-lg px-5 py-2">Back to Dashboard</a>
+                    <button type="submit" class="btn btn-info btn-lg px-5 py-2 me-3">Update Role</button>
+                    <a href="/roles" class="btn btn-info btn-lg px-5 py-2">Back to Dashboard</a>
                 </div>
             </form>
         </div>

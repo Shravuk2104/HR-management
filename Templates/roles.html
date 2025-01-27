@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'main' %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Role Dashboard</h1>
+    <a href="{% url 'add_role' %}" class="btn btn-success">Add New Role</a>
+    <hr>
+    <table class="table table-bordered table-hover shadow">
+        <thead class="table-danger">
+            <tr>
+                <th>Sr No.</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for role in roles %}
+        <tr>
+            <td>{{ forloop.counter }}</td> <!-- Serial number -->
+            <td>{{ role.role_name }}</td>
+            <td>{{ role.description }}</td>
+            <td>
+                
+                {% if role.status %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+                
+            </td>
+            <td>
+                <a href="{% url 'update_role' role.role_id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'delete_role' role.role_id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">No roles found.</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock 'main' %}
