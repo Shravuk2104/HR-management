@@ -1,5 +1,5 @@
 from django import forms
-from .models import Department
+from .models import Department,Role,User
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
@@ -9,10 +9,6 @@ class DepartmentForm(forms.ModelForm):
             'dept_name':forms.TextInput(attrs={'class':'form-control'}),
             'description':forms.Textarea(attrs={'class':'form-control','rows':4}),
         }
-
-
-from django import forms
-from .models import Role
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -26,3 +22,40 @@ class RoleForm(forms.ModelForm):
             'role_name': 'Role Name',
             'description': 'Description',
         }
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            'first_name', 'last_name', 'email',
+            'mobile', 'role', 'department', 'reporting_manager', 'date_of_joining','username','password'
+        ]
+        widgets = {
+            
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'password': forms.PasswordInput(),  # Masked input for passwords
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'mobile': forms.TextInput(attrs={'class': 'form-control'}),
+            'date_of_joining': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Role"  # Optional: Placeholder for dropdown
+    )
+
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Select Department"  # Optional: Placeholder for dropdown
+    )
+    reporting_manager = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),  # Optional: Only active users
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False,
+        empty_label="Select Reporting Manager"  # Optional: Placeholder for dropdown
+    )

@@ -1,8 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Department
-from .models import Role
-from .forms import DepartmentForm, RoleForm
+from .models import Department,User,Role
+from .forms import DepartmentForm, RoleForm,UserForm
 
 def dashboard(request):
     return render(request, 'dashboard.html')
@@ -27,9 +26,6 @@ def add_department(request):
     return render(request, 'add_department.html', {'form': form})
 
 
-# def roless(request):
-#     roles = Role.objects.all()  # Fetch all roles from the database
-#     return render(request, 'roles.html', {'roles': roles})
 
 
 
@@ -100,3 +96,49 @@ def delete_role(request, role_id):
         messages.warning(request, "Role marked as inactive.")
         return redirect('/roles')
     return render(request, 'delete_role.html', {'role': role})
+
+
+def employee(request):
+    users = User.objects.select_related('role_id', 'dept_id', 'reporting_manager_id').all()
+
+    for user in users:
+        user.status_text = "Active" if user.is_active else "Inactive"
+        user.role_id_text = user.role_id.role_name if user.role_id else "No Role Assigned"
+        user.department_text = user.dept_id.dept_name if user.dept_id else "No Department Assigned"
+        user.reporting_manager_text = f"{user.reporting_manager_id.first_name} {user.reporting_manager_id.last_name}" if user.reporting_manager_id else "No Reporting Manager"
+
+    return render(request, 'employee.html', {'users': users})
+
+
+def add_employee(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Employee added successfully!")
+            return redirect('/employee')
+    else:
+        form = UserForm()
+    return render(request, 'add_employee.html', {'form': form})
+
+# Update Employee View
+def update_employee(request, employee_id):
+    user = get_object_or_404(User, pk=employee_id)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Employee Details updated successfully!")
+            return redirect('/employee')
+    else:
+        form = UserForm(instance=user)
+    return render(request, 'update_employee.html', {'form': form, 'user': user})
+
+def delete_employee(request, employee_id):
+    user = get_object_or_404(User, pk=employee_id)
+    if request.method == 'POST':
+        user.is_active = False  # Mark as inactive
+        user.save()
+        messages.warning(request, "Employee marked as inactive.")
+        return redirect('/employee')
+    return render(request, 'delete_employee.html', {'user': user})

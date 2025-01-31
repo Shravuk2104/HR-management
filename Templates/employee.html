@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'main' %}
+<div class="container mt-5">
+<h1 class="text-center mb-4">Employee Management Dashboard</h1>
+    <form class="d-flex" method="get" action="/employee">
+        
+    </form>
+    <a href="{% url 'add_employee' %}" class="btn btn-success">Add Employee</a><hr>
+    <table class="table table-bordered table-hover shadow">
+        <thead class="table-danger">
+        <tr>
+            <th>Sr No</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Reporting Manager</th>
+            <th>Date of Joining</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.employee_id }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                {% if user.role_id %}
+                    {{ user.role_id.role_name }}
+                {% else %}
+                    No Role Assigned
+                {% endif %}
+            </td>
+            
+            <td>
+                {% if user.dept_id %}
+                    {{ user.dept_id.dept_name }}
+                {% else %}
+                    No Department Assigned
+                {% endif %}
+            </td>
+            
+            <td>
+                {% if user.reporting_manager_id %}
+                    {{ user.reporting_manager_id.first_name }} {{ user.reporting_manager_id.last_name }}
+                {% else %}
+                    No Reporting Manager
+                {% endif %}
+            </td>
+            
+            <td>{{ user.date_of_joining  }}</td>
+            <td>
+                
+                {% if user.is_active %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+                
+            </td>
+            <td>
+                <a href="{% url 'update_employee' user.employee_id %}" class="btn btn-warning btn-sm">Edit</a><br><br>
+                <a href="{% url 'delete_employee' user.employee_id %}" class="btn btn-warning btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+        
+        
+    </table>
+    </div>
+    {% endblock 'main' %}
