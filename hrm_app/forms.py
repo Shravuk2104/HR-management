@@ -1,5 +1,8 @@
 from django import forms
 from .models import Department,Role,User
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, UserCreationForm
+from django.contrib.auth import get_user_model
+
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
@@ -58,4 +61,33 @@ class UserForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False,
         empty_label="Select Reporting Manager"  # Optional: Placeholder for dropdown
+    )
+
+
+class UserLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        max_length=100, 
+        required=True, 
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Username'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter Password'}), 
+        required=True
+    )
+
+class ResetPasswordForm(PasswordResetForm):
+    email = forms.EmailField(
+        max_length=100, 
+        required=True, 
+        widget=forms.EmailInput(attrs={'placeholder': 'Enter Registered Email'})
+    )
+
+class SetNewPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter New Password'}), 
+        required=True
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm New Password'}), 
+        required=True
     )

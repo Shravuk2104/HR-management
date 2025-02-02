@@ -54,3 +54,24 @@ body {
 #sidebar .nav-link {
     color: #343a40; 
 }
+
+@media (max-width: 768px) {
+  #sidebar {
+      position: absolute;
+      width: 60%;
+      height: 100%;
+      z-index: 1000;
+      background-color: #17a2b8;
+      left: -100%;  /* Hide sidebar by default */
+      transition: left 0.3s ease-in-out;
+  }
+
+  #sidebar.active {
+      left: 0;  /* Show sidebar when active */
+  }
+
+  #mainContent {
+      width: 100% !important;
+      margin-left: 0 !important;
+  }
+}
