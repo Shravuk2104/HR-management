@@ -40,7 +40,11 @@ urlpatterns = [
     path('verify-otp/', verify_otp, name='verify_otp'),
     path('forgot-password/', request_otp, name='forgot_password'),
     path('request_otp/', request_otp, name='request_otp'),
-
+    
+    path('create/', views.create_task, name='create_task'),
+    path('update_task/<int:task_id>/', views.update_task, name='update_task'),
+    path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
+    path('task',views.task),
 ]
 
 if settings.DEBUG:

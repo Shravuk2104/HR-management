@@ -91,3 +91,27 @@ class SetNewPasswordForm(SetPasswordForm):
         widget=forms.PasswordInput(attrs={'placeholder': 'Confirm New Password'}), 
         required=True
     )
+
+from django import forms
+from .models import Task
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['task_title', 'task_description', 'task_priority', 'start_date', 'end_date', 'task_type']
+        widgets = {
+            'task_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter task title'}),
+            'task_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter task description', 'rows': 3}),
+            'task_priority': forms.Select(
+                choices=[('', 'Select Task Priority')] + list(Task.PRIORITY_CHOICES),
+                attrs={'class': 'form-control'}
+            ),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'task_type': forms.Select(
+                choices=[('', 'Select Task Type')] + list(Task.TASK_TYPE_CHOICES),
+                attrs={'class': 'form-control'}
+            ),
+        }
+
+

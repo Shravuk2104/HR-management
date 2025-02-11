@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib import messages
-from .models import Department,User,Role
-from .forms import DepartmentForm, RoleForm,UserForm, UserLoginForm, ResetPasswordForm, SetNewPasswordForm
+from .models import Department,User,Role,Task
+from .forms import DepartmentForm, RoleForm,UserForm, UserLoginForm, ResetPasswordForm, SetNewPasswordForm,TaskForm
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -17,6 +17,7 @@ from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from django.contrib.auth.tokens import default_token_generator
 import random
+from django.urls import path
 
 otp_storage = {}
 
@@ -292,3 +293,133 @@ def request_otp(request):
             messages.error(request, "User not found.")
     
     return render(request, "forgot_password.html")
+
+def create_task(request):
+    # Get the current logged-in user (admin, manager, etc.)
+    user = request.user
+
+    if request.method == 'POST':
+        print(request.POST)
+        # Extract data from the form
+        title = request.POST.get('task_title')
+        description = request.POST.get('task_description')
+        priority = request.POST.get('task_priority')
+        employee_id = request.POST.get('employee_id')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        task_type = request.POST.get('task_type')
+
+        # if not title or not description or not priority or not task_type or not start_date or not end_date:
+        #     messages.error(request, 'Please fill in all the fields.')
+        #     return redirect('/create/') 
+        
+        # Get the selected employee
+        employee = User.objects.get(id=employee_id) if employee_id else None
+        
+        # Create the Task instance
+        task = Task(
+            task_title=title,
+            task_description=description,
+            task_priority=priority,
+            start_date=start_date,
+            end_date=end_date,
+            task_type=task_type,
+        )
+        task.save()  # Save the task instance first
+        
+        # Create a TaskAssignment instance
+        # task_assignment = TaskAssignment(
+        #     task=task,
+        #     employee_id=employee,
+        #     assigned_by=request.user,  # Current logged-in user is assigning the task
+        # )
+        # task_assignment.save()  # Save the task assignment
+        
+        # Show a success message
+        messages.success(request, 'Task created and assigned successfully!')
+        
+        # Redirect to the dashboard or task list page
+        return redirect('/task')
+    else:
+        # Fetch all employees for the employee dropdown
+        employees = User.objects.all()
+
+        # Create an empty task instance for pre-populating the form
+        task = Task()
+
+        # Render the form with employees data
+        return render(request, 'create_task_form.html', {'employees': employees, 'task': task})
+
+# @login_required
+def update_task(request, task_id):
+    # Fetch the task to be updated
+    task = get_object_or_404(Task, task_id=task_id)
+
+    if request.method == 'POST':
+        # Extract data from the form
+        title = request.POST.get('task_title')
+        description = request.POST.get('task_description')
+        priority = request.POST.get('task_priority')
+        employee_id = request.POST.get('employee_id')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        task_type = request.POST.get('task_type')
+
+        # Get the selected employee
+        employee = User.objects.get(id=employee_id) if employee_id else None
+        
+        # Update task instance
+        task.task_title = title
+        task.task_description = description
+        task.task_priority = priority
+        task.start_date = start_date
+        task.end_date = end_date
+        task.task_type = task_type
+        task.employee = employee
+        task.save()  # Save the updated task instance
+        
+        # Show success message
+        messages.success(request, 'Task updated successfully!')
+        
+        # Redirect to the dashboard or task list page
+        return redirect('/dashboard/')
+    
+    else:
+        # Fetch all employees for the employee dropdown
+        employees = User.objects.all()
+
+        # Render the form with existing task data
+        return render(request, 'update_task_form.html', {'employees': employees, 'task': task})
+    
+
+def delete_task(request, task_id):
+    # Fetch the task to be deleted
+    task = get_object_or_404(Task, id=task_id)
+
+    if request.method == 'POST':
+        # Delete the task instance
+        task.delete()
+        
+        # Show success message
+        messages.success(request, 'Task deleted successfully!')
+        
+        # Redirect to the dashboard or task list page
+        return redirect('/dashboard')
+    
+    # Render confirmation template for task deletion
+    return render(request, 'confirm_delete.html', {'task': task})
+
+def task_count_view(request):
+    task_count = Task.objects.count()  # Count the number of tasks
+    stats = {
+        'task_count': task_count,
+        'completed': Task.objects.filter(assignments__status='Completed').count(),
+        'in_progress': Task.objects.filter(assignments__status='In Progress').count(),
+        'pending': Task.objects.filter(assignments__status='Pending').count(),
+    }
+    print(stats)
+    return render(request, 'task.html', {'stats': stats})
+
+def task(request):
+    tasks = Task.objects.all()  # Retrieve all tasks
+    return render(request, 'task.html', {'tasks': tasks})
