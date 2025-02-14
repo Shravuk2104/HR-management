@@ -1,4 +1,5 @@
 from hrm_app import views
+from hrm_app.views import user_login, user_logout, CustomPasswordResetView, PasswordResetConfirmView, reset_password, verify_otp, request_otp, filter_tasks
 from django.urls import path
 from hr_Management import settings
 from django.conf.urls.static import static
@@ -45,6 +46,9 @@ urlpatterns = [
     path('update_task/<int:task_id>/', views.update_task, name='update_task'),
     path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
     path('task',views.task),
+    path('add-review/', views.add_review, name='add_review'),
+    path('review-dashboard/', views.review_dashboard, name='review_dashboard'),
+    path('filter-tasks/', filter_tasks, name='filter_tasks'),
 ]
 
 if settings.DEBUG:
