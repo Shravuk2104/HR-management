@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib import messages
-from .models import Department,User,Role,Task
+from .models import Department, Role, User, Task, TaskAssignment, PerformanceReview, Leave, LeaveQuota
 from .forms import DepartmentForm, RoleForm,UserForm, UserLoginForm, ResetPasswordForm, SetNewPasswordForm,TaskForm,PerformanceReviewForm
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -497,3 +497,75 @@ def filter_tasks(request):
 
     context = {'tasks': tasks}
     return render(request, 'review_dashboard.html', context)
+
+def Leave_dashboard(request):
+    leaves = Leave.objects.all()
+    quotas = LeaveQuota.objects.all()
+    return render(request, 'Leave_dashboard.html', {'leaves': leaves, 'quotas': quotas})
+
+def apply_leave(request):
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')  # Get employee_id from the form
+        leave_type = request.POST.get('leave_type')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        reason = request.POST.get('reason')
+
+        try:
+            # Fetch employee using `employee_id` instead of `id`
+            employee = User.objects.get(employee_id=employee_id)
+
+            Leave.objects.create(
+                employee=employee,
+                leave_type=leave_type,
+                start_date=start_date,
+                end_date=end_date,
+                reason=reason
+            )
+
+            return redirect('leave_status')  # Adjust as per your URL name
+        except User.DoesNotExist:
+            return render(request, 'apply_leave.html', {'error': 'Invalid employee ID'})
+
+    return render(request, 'apply_leave.html')
+
+
+def update_leave(request, leaveid):
+    leave = get_object_or_404(Leave, leaveid=leaveid, employee=request.user)
+
+    if leave.status != "pending":
+        return redirect("Leave_dashboard")  # Prevent editing after approval
+
+    if request.method == "POST":
+        leave.leave_type = request.POST.get("leave_type")
+        leave.start_date = request.POST.get("start_date")
+        leave.end_date = request.POST.get("end_date")
+        leave.reason = request.POST.get("reason")
+        leave.save()
+        return redirect("Leave_dashboard")
+
+    return render(request, "update_leave.html", {"leave": leave})
+
+def add_leave_quota(request):
+    if request.method == "POST":
+        employee_id = request.POST.get('employee_id')
+        privilege_leave = request.POST.get('privilege_leave')
+        casual_leave = request.POST.get('casual_leave')
+        sick_leave = request.POST.get('sick_leave')
+
+        try:
+            employee = User.objects.get(id=employee_id)  # Change to `employee_id` if using a custom model
+            LeaveQuota.objects.create(
+                employee=employee,
+                privilege_leave=privilege_leave,
+                casual_leave=casual_leave,
+                sick_leave=sick_leave
+            )
+            return redirect('leave_quota_list')  # Redirect to a quota list page (create it if needed)
+        except User.DoesNotExist:
+            return render(request, 'add_leave_quota.html', {'error': 'Invalid employee ID'})
+
+    employees = User.objects.all()  # Fetch employees to display in a dropdown
+    return render(request, 'add_leave_quota.html', {'employees': employees})
+
+

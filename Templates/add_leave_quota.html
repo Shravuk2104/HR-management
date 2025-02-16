@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block 'main' %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Leave Quota List</h2>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Sr No.</th>
+                <th>Employee Name</th>
+                <th>Privilege Leave (PL)</th>
+                <th>Casual Leave (CL)</th>
+                <th>Sick Leave (SL)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quota in quotas %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ quota.employee.username }}</td>
+                    <td>{{ quota.privilege_leave }}</td>
+                    <td>{{ quota.casual_leave }}</td>
+                    <td>{{ quota.sick_leave }}</td>
+                    <td>
+                        <a href="{% url 'edit_leave_quota' quota.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No leave quotas found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<hr>
+    
+</div><hr>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Add Leave Quota</h2>
+    
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    
+    <div class="card shadow p-4">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="employee_id" class="form-label">Select Employee:</label>
+                <select id="employee_id" name="employee_id" class="form-select" required>
+                    <option value="">-- Select Employee --</option>
+                    {% for employee in employees %}
+                        <option value="{{ employee.id }}">{{ employee.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="privilege_leave" class="form-label">Privilege Leave:</label>
+                <input type="number" id="privilege_leave" name="privilege_leave" class="form-control" value="10" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="casual_leave" class="form-label">Casual Leave:</label>
+                <input type="number" id="casual_leave" name="casual_leave" class="form-control" value="10" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="sick_leave" class="form-label">Sick Leave:</label>
+                <input type="number" id="sick_leave" name="sick_leave" class="form-control" value="10" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Add Leave Quota</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

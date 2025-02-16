@@ -1,5 +1,5 @@
 from hrm_app import views
-from hrm_app.views import user_login, user_logout, CustomPasswordResetView, PasswordResetConfirmView, reset_password, verify_otp, request_otp, filter_tasks
+from hrm_app.views import user_login, user_logout, CustomPasswordResetView, PasswordResetConfirmView, reset_password, verify_otp, request_otp, filter_tasks,add_leave_quota
 from django.urls import path
 from hr_Management import settings
 from django.conf.urls.static import static
@@ -49,6 +49,10 @@ urlpatterns = [
     path('add-review/', views.add_review, name='add_review'),
     path('review-dashboard/', views.review_dashboard, name='review_dashboard'),
     path('filter-tasks/', filter_tasks, name='filter_tasks'),
+    path('Leave_dashboard/',views.Leave_dashboard, name='Leave_dashboard'),
+     path('apply-leave/', views.apply_leave, name='apply_leave'),
+    path('update-leave/<int:leaveid>/', views.update_leave, name='update_leave'),
+    path('add-leave-quota/', add_leave_quota, name='add_leave_quota'),
 ]
 
 if settings.DEBUG:

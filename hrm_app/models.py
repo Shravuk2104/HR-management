@@ -118,3 +118,42 @@ class PerformanceReview(models.Model):
 
     def __str__(self):
         return f"Review {self.review_id} - {self.review_title}"
+    
+
+
+
+class Leave(models.Model):
+    LEAVE_TYPES = [
+        ('SL', 'Sick Leave'),
+        ('CL', 'Casual Leave'),
+        ('PL', 'Privilege Leave'),
+        ('LWP', 'Leave Without Pay')
+    ]
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected')
+    ]
+    leaveid = models.AutoField(primary_key=True)
+    employee_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    leave_type = models.CharField(max_length=10, choices=LEAVE_TYPES)
+    reason = models.CharField(max_length=200)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    total_days = models.IntegerField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approver')
+
+class LeaveQuota(models.Model):
+    LEAVE_TYPES = [
+        ('SL', 'Sick Leave'),
+        ('CL', 'Casual Leave'),
+        ('PL', 'Privilege Leave'),
+        ('LWP', 'Leave Without Pay')
+    ]
+    quotaid = models.AutoField(primary_key=True)
+    employee_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    leave_type = models.CharField(max_length=10, choices=LEAVE_TYPES)
+    total_quota = models.IntegerField()
+    used_quota = models.IntegerField(default=0)
+    remain_quota = models.IntegerField()

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block 'main' %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Edit Leave Quota</h2>
+
+    <div class="card shadow p-4">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="privilege_leave" class="form-label">Privilege Leave:</label>
+                <input type="number" id="privilege_leave" name="privilege_leave" class="form-control" value="{{ quota.privilege_leave }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="casual_leave" class="form-label">Casual Leave:</label>
+                <input type="number" id="casual_leave" name="casual_leave" class="form-control" value="{{ quota.casual_leave }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="sick_leave" class="form-label">Sick Leave:</label>
+                <input type="number" id="sick_leave" name="sick_leave" class="form-control" value="{{ quota.sick_leave }}" required>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Update Leave Quota</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
